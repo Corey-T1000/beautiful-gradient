@@ -8,6 +8,7 @@ export interface ColorStop {
 }
 
 export type BlendMode = 'overlay' | 'color-burn' | 'multiply' | 'screen' | 'soft-light';
+export type Shape = 'circle' | 'ellipse';
 
 export interface GradientState {
   type: 'linear' | 'radial';
@@ -16,7 +17,7 @@ export interface GradientState {
   centerX: number;
   centerY: number;
   radius: number;
-  radialShape: 'circle' | 'ellipse';
+  radialShape: Shape;
   feather: number;
   grain: number;
   grainFrequency: number;
@@ -31,7 +32,7 @@ interface GradientContextType extends GradientState {
   setCenterX: (x: number) => void;
   setCenterY: (y: number) => void;
   setRadius: (radius: number) => void;
-  setRadialShape: (shape: 'circle' | 'ellipse') => void;
+  setRadialShape: (shape: Shape) => void;
   setFeather: (amount: number) => void;
   setGrain: (amount: number) => void;
   setGrainFrequency: (freq: number) => void;
@@ -43,25 +44,40 @@ interface GradientContextType extends GradientState {
   removeColorStop: (id: string) => void;
 }
 
+// Default values as constants
+const DEFAULT_GRADIENT_TYPE = 'radial' as const;
+const DEFAULT_ANGLE = 90;
+const DEFAULT_CENTER_X = 32;
+const DEFAULT_CENTER_Y = 32;
+const DEFAULT_RADIUS = 66;
+const DEFAULT_SHAPE: Shape = 'ellipse';
+const DEFAULT_FEATHER = 0;
+const DEFAULT_GRAIN = 0;
+const DEFAULT_GRAIN_FREQUENCY = 0.6;
+const DEFAULT_GRAIN_OCTAVES = 4;
+const DEFAULT_GRAIN_BLEND_MODE: BlendMode = 'overlay';
+const DEFAULT_ASPECT_RATIO = 1.0;
+const DEFAULT_COLOR_STOPS: ColorStop[] = [
+  { id: '1', color: '#FF0080', alpha: 1, position: 0 },
+  { id: '2', color: '#7928CA', alpha: 1, position: 100 },
+];
+
 const GradientContext = createContext<GradientContextType | null>(null);
 
 export function GradientProvider({ children }: { children: React.ReactNode }) {
-  const [type, setType] = useState<'linear' | 'radial'>('radial');
-  const [angle, setAngle] = useState(90);
-  const [centerX, setCenterX] = useState(32);
-  const [centerY, setCenterY] = useState(32);
-  const [radius, setRadius] = useState(66);
-  const [radialShape, setRadialShape] = useState<'circle' | 'ellipse'>('ellipse');
-  const [feather, setFeather] = useState(0);
-  const [grain, setGrain] = useState(0);
-  const [grainFrequency, setGrainFrequency] = useState(0.6);
-  const [grainOctaves, setGrainOctaves] = useState(4);
-  const [grainBlendMode, setGrainBlendMode] = useState<BlendMode>('overlay');
-  const [aspectRatio, setAspectRatio] = useState(1.0);
-  const [colorStops, setColorStops] = useState<ColorStop[]>([
-    { id: '1', color: '#FF0080', alpha: 1, position: 0 },
-    { id: '2', color: '#7928CA', alpha: 1, position: 100 },
-  ]);
+  const [type, setType] = useState<'linear' | 'radial'>(DEFAULT_GRADIENT_TYPE);
+  const [angle, setAngle] = useState(DEFAULT_ANGLE);
+  const [centerX, setCenterX] = useState(DEFAULT_CENTER_X);
+  const [centerY, setCenterY] = useState(DEFAULT_CENTER_Y);
+  const [radius, setRadius] = useState(DEFAULT_RADIUS);
+  const [radialShape, setRadialShape] = useState<Shape>(DEFAULT_SHAPE);
+  const [feather, setFeather] = useState(DEFAULT_FEATHER);
+  const [grain, setGrain] = useState(DEFAULT_GRAIN);
+  const [grainFrequency, setGrainFrequency] = useState(DEFAULT_GRAIN_FREQUENCY);
+  const [grainOctaves, setGrainOctaves] = useState(DEFAULT_GRAIN_OCTAVES);
+  const [grainBlendMode, setGrainBlendMode] = useState<BlendMode>(DEFAULT_GRAIN_BLEND_MODE);
+  const [aspectRatio, setAspectRatio] = useState(DEFAULT_ASPECT_RATIO);
+  const [colorStops, setColorStops] = useState<ColorStop[]>(DEFAULT_COLOR_STOPS);
 
   const addColorStop = () => {
     const newId = (Math.max(...colorStops.map(s => parseInt(s.id))) + 1).toString();
@@ -93,7 +109,7 @@ export function GradientProvider({ children }: { children: React.ReactNode }) {
       radius,
       setRadius,
       radialShape,
-      setRadialShape,
+      setRadialShape: (shape: Shape) => setRadialShape(shape),
       feather,
       setFeather,
       grain,
@@ -103,7 +119,7 @@ export function GradientProvider({ children }: { children: React.ReactNode }) {
       grainOctaves,
       setGrainOctaves,
       grainBlendMode,
-      setGrainBlendMode,
+      setGrainBlendMode: (mode: BlendMode) => setGrainBlendMode(mode),
       aspectRatio,
       setAspectRatio,
       addColorStop,
