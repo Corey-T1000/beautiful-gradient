@@ -7,7 +7,12 @@
 
 A modern web application for creating stunning, customizable gradients with advanced controls. Built with React, TypeScript, and Tailwind CSS.
 
-![Beautiful Gradients Screenshot](./assets/screenshot.png)
+<!-- TODO: To add the screenshot:
+1. Create a new issue in your GitHub repository
+2. Drag and drop the screenshot into the issue description
+3. Copy the generated image URL
+4. Replace this comment with: ![Beautiful Gradients Screenshot](paste-url-here)
+-->
 
 ## ✨ Features
 
@@ -31,7 +36,7 @@ A modern web application for creating stunning, customizable gradients with adva
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/beautiful-gradient.git
+   git clone https://github.com/Corey-T1000/beautiful-gradient.git
    cd beautiful-gradient
    ```
 
