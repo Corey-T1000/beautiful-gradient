@@ -1,6 +1,4 @@
-import React from 'react';
 import { useGradient } from '../context/GradientContext';
-import type { RadialShape } from '../context/GradientContext';
 
 export default function RadialControls() {
   const {
@@ -16,7 +14,7 @@ export default function RadialControls() {
     setAspectRatio,
   } = useGradient();
 
-  const shapes: RadialShape[] = ['circle', 'ellipse'];
+  const shapes = ['circle', 'ellipse'] as const;
 
   return (
     <div className="space-y-4">
