@@ -8,12 +8,6 @@
 
 A modern web application for creating stunning, customizable gradients with advanced controls. Built with React, TypeScript, and Tailwind CSS.
 
-<p align="center">
-  <a href="https://github.com/Corey-T1000/beautiful-gradient">
-    <img src="https://img.shields.io/badge/View_on_GitHub-100000?style=for-the-badge&logo=github&logoColor=white" alt="View on GitHub" />
-  </a>
-</p>
-
 ![Beautiful Gradients Interface](./assets/ui-screenshot.png)
 
 ## ✨ Features
