@@ -1,4 +1,5 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
+import { decodeState, updateURL } from '../utils/urlState';
 
 export interface ColorStop {
   id: string;
@@ -64,63 +65,88 @@ const DEFAULT_COLOR_STOPS: ColorStop[] = [
 
 const GradientContext = createContext<GradientContextType | null>(null);
 
+// Get initial state from URL or defaults
+function getInitialState(): GradientState {
+  const urlState = decodeState(window.location.search);
+  return {
+    type: urlState.type ?? DEFAULT_GRADIENT_TYPE,
+    angle: urlState.angle ?? DEFAULT_ANGLE,
+    centerX: urlState.centerX ?? DEFAULT_CENTER_X,
+    centerY: urlState.centerY ?? DEFAULT_CENTER_Y,
+    radius: urlState.radius ?? DEFAULT_RADIUS,
+    radialShape: urlState.radialShape ?? DEFAULT_SHAPE,
+    feather: urlState.feather ?? DEFAULT_FEATHER,
+    grain: urlState.grain ?? DEFAULT_GRAIN,
+    grainFrequency: urlState.grainFrequency ?? DEFAULT_GRAIN_FREQUENCY,
+    grainOctaves: urlState.grainOctaves ?? DEFAULT_GRAIN_OCTAVES,
+    grainBlendMode: urlState.grainBlendMode ?? DEFAULT_GRAIN_BLEND_MODE,
+    aspectRatio: urlState.aspectRatio ?? DEFAULT_ASPECT_RATIO,
+    colorStops: urlState.colorStops ?? DEFAULT_COLOR_STOPS,
+  };
+}
+
 export function GradientProvider({ children }: { children: React.ReactNode }) {
-  const [type, setType] = useState<'linear' | 'radial'>(DEFAULT_GRADIENT_TYPE);
-  const [angle, setAngle] = useState(DEFAULT_ANGLE);
-  const [centerX, setCenterX] = useState(DEFAULT_CENTER_X);
-  const [centerY, setCenterY] = useState(DEFAULT_CENTER_Y);
-  const [radius, setRadius] = useState(DEFAULT_RADIUS);
-  const [radialShape, setRadialShape] = useState<Shape>(DEFAULT_SHAPE);
-  const [feather, setFeather] = useState(DEFAULT_FEATHER);
-  const [grain, setGrain] = useState(DEFAULT_GRAIN);
-  const [grainFrequency, setGrainFrequency] = useState(DEFAULT_GRAIN_FREQUENCY);
-  const [grainOctaves, setGrainOctaves] = useState(DEFAULT_GRAIN_OCTAVES);
-  const [grainBlendMode, setGrainBlendMode] = useState<BlendMode>(DEFAULT_GRAIN_BLEND_MODE);
-  const [aspectRatio, setAspectRatio] = useState(DEFAULT_ASPECT_RATIO);
-  const [colorStops, setColorStops] = useState<ColorStop[]>(DEFAULT_COLOR_STOPS);
+  const [state, setState] = useState<GradientState>(getInitialState);
+
+  // Update URL when state changes
+  useEffect(() => {
+    updateURL(state);
+  }, [state]);
+
+  const setType = (type: 'linear' | 'radial') => setState(prev => ({ ...prev, type }));
+  const setAngle = (angle: number) => setState(prev => ({ ...prev, angle }));
+  const setCenterX = (centerX: number) => setState(prev => ({ ...prev, centerX }));
+  const setCenterY = (centerY: number) => setState(prev => ({ ...prev, centerY }));
+  const setRadius = (radius: number) => setState(prev => ({ ...prev, radius }));
+  const setRadialShape = (radialShape: Shape) => setState(prev => ({ ...prev, radialShape }));
+  const setFeather = (feather: number) => setState(prev => ({ ...prev, feather }));
+  const setGrain = (grain: number) => setState(prev => ({ ...prev, grain }));
+  const setGrainFrequency = (grainFrequency: number) => setState(prev => ({ ...prev, grainFrequency }));
+  const setGrainOctaves = (grainOctaves: number) => setState(prev => ({ ...prev, grainOctaves }));
+  const setGrainBlendMode = (grainBlendMode: BlendMode) => setState(prev => ({ ...prev, grainBlendMode }));
+  const setAspectRatio = (aspectRatio: number) => setState(prev => ({ ...prev, aspectRatio }));
 
   const addColorStop = () => {
-    const newId = (Math.max(...colorStops.map(s => parseInt(s.id))) + 1).toString();
-    const position = Math.round((colorStops[colorStops.length - 1].position + colorStops[0].position) / 2);
-    setColorStops([...colorStops, { id: newId, color: '#FFFFFF', alpha: 1, position }]);
+    setState(prev => {
+      const newId = (Math.max(...prev.colorStops.map(s => parseInt(s.id))) + 1).toString();
+      const position = Math.round((prev.colorStops[prev.colorStops.length - 1].position + prev.colorStops[0].position) / 2);
+      return {
+        ...prev,
+        colorStops: [...prev.colorStops, { id: newId, color: '#FFFFFF', alpha: 1, position }]
+      };
+    });
   };
 
   const updateColorStop = (id: string, updates: Partial<Omit<ColorStop, 'id'>>) => {
-    setColorStops(colorStops.map(stop => 
-      stop.id === id ? { ...stop, ...updates } : stop
-    ));
+    setState(prev => ({
+      ...prev,
+      colorStops: prev.colorStops.map(stop => 
+        stop.id === id ? { ...stop, ...updates } : stop
+      )
+    }));
   };
 
   const removeColorStop = (id: string) => {
-    setColorStops(colorStops.filter(stop => stop.id !== id));
+    setState(prev => ({
+      ...prev,
+      colorStops: prev.colorStops.filter(stop => stop.id !== id)
+    }));
   };
 
   return (
     <GradientContext.Provider value={{
-      type,
+      ...state,
       setType,
-      angle,
       setAngle,
-      colorStops,
-      centerX,
       setCenterX,
-      centerY,
       setCenterY,
-      radius,
       setRadius,
-      radialShape,
-      setRadialShape: (shape: Shape) => setRadialShape(shape),
-      feather,
+      setRadialShape,
       setFeather,
-      grain,
       setGrain,
-      grainFrequency,
       setGrainFrequency,
-      grainOctaves,
       setGrainOctaves,
-      grainBlendMode,
-      setGrainBlendMode: (mode: BlendMode) => setGrainBlendMode(mode),
-      aspectRatio,
+      setGrainBlendMode,
       setAspectRatio,
       addColorStop,
       updateColorStop,

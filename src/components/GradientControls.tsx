@@ -1,6 +1,7 @@
 import { useGradient } from '../context/GradientContext';
 import RadialControls from './RadialControls';
 import EffectsControls from './EffectsControls';
+import DualModeInput from './DualModeInput';
 
 export default function GradientControls() {
   const {
@@ -45,17 +46,15 @@ export default function GradientControls() {
           <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
             Angle
           </h2>
-          <input
-            type="range"
-            min="0"
-            max="360"
+          <DualModeInput
             value={angle}
-            onChange={(e) => setAngle(Number(e.target.value))}
-            className="w-full"
+            onChange={setAngle}
+            min={0}
+            max={360}
+            step={1}
+            unit="°"
+            precision={0}
           />
-          <div className="text-sm text-gray-600 dark:text-gray-400">
-            {angle}°
-          </div>
         </div>
       ) : (
         <RadialControls />

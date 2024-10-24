@@ -1,4 +1,5 @@
 import { useGradient } from '../context/GradientContext';
+import DualModeInput from './DualModeInput';
 
 export default function RadialControls() {
   const {
@@ -39,75 +40,49 @@ export default function RadialControls() {
       </div>
 
       <div className="grid grid-cols-2 gap-4">
-        <div>
-          <label className="text-sm text-gray-600 dark:text-gray-400">
-            Center X
-          </label>
-          <input
-            type="range"
-            min="0"
-            max="100"
-            value={centerX}
-            onChange={(e) => setCenterX(Number(e.target.value))}
-            className="w-full"
-          />
-          <div className="text-sm text-gray-600 dark:text-gray-400">
-            {centerX}%
-          </div>
-        </div>
-        <div>
-          <label className="text-sm text-gray-600 dark:text-gray-400">
-            Center Y
-          </label>
-          <input
-            type="range"
-            min="0"
-            max="100"
-            value={centerY}
-            onChange={(e) => setCenterY(Number(e.target.value))}
-            className="w-full"
-          />
-          <div className="text-sm text-gray-600 dark:text-gray-400">
-            {centerY}%
-          </div>
-        </div>
+        <DualModeInput
+          label="Center X"
+          value={centerX}
+          onChange={setCenterX}
+          min={0}
+          max={100}
+          step={1}
+          unit="%"
+          precision={0}
+        />
+        <DualModeInput
+          label="Center Y"
+          value={centerY}
+          onChange={setCenterY}
+          min={0}
+          max={100}
+          step={1}
+          unit="%"
+          precision={0}
+        />
       </div>
 
-      <div>
-        <label className="text-sm text-gray-600 dark:text-gray-400">
-          Radius
-        </label>
-        <input
-          type="range"
-          min="0"
-          max="100"
-          value={radius}
-          onChange={(e) => setRadius(Number(e.target.value))}
-          className="w-full"
-        />
-        <div className="text-sm text-gray-600 dark:text-gray-400">
-          {radius}%
-        </div>
-      </div>
+      <DualModeInput
+        label="Radius"
+        value={radius}
+        onChange={setRadius}
+        min={0}
+        max={100}
+        step={1}
+        unit="%"
+        precision={0}
+      />
 
       {radialShape === 'ellipse' && (
-        <div>
-          <label className="text-sm text-gray-600 dark:text-gray-400">
-            Aspect Ratio
-          </label>
-          <input
-            type="range"
-            min="0.5"
-            max="2"
-            step="0.1"
-            value={aspectRatio}
-            onChange={(e) => setAspectRatio(Number(e.target.value))}
-            className="w-full"
-          />
-          <div className="text-sm text-gray-600 dark:text-gray-400">
-            {aspectRatio.toFixed(1)}
-          </div>
-        </div>
+        <DualModeInput
+          label="Aspect Ratio"
+          value={aspectRatio}
+          onChange={setAspectRatio}
+          min={0.5}
+          max={2}
+          step={0.1}
+          precision={1}
+        />
       )}
     </div>
   );

@@ -1,6 +1,7 @@
 import { useGradient } from '../context/GradientContext';
 import { Trash2, Plus } from 'lucide-react';
 import type { BlendMode } from '../context/GradientContext';
+import DualModeInput from './DualModeInput';
 
 export default function EffectsControls() {
   const { 
@@ -54,21 +55,15 @@ export default function EffectsControls() {
                 }
                 className="w-12 h-8 rounded cursor-pointer"
               />
-              <input
-                type="range"
-                min="0"
-                max="100"
+              <DualModeInput
                 value={stop.position}
-                onChange={(e) =>
-                  updateColorStop(stop.id, {
-                    position: Number(e.target.value),
-                  })
-                }
-                className="flex-1"
+                onChange={(value) => updateColorStop(stop.id, { position: value })}
+                min={0}
+                max={100}
+                step={1}
+                unit="%"
+                precision={0}
               />
-              <div className="text-sm text-gray-600 dark:text-gray-400 w-12">
-                {stop.position}%
-              </div>
               {colorStops.length > 2 && (
                 <button
                   onClick={() => removeColorStop(stop.id)}
@@ -83,21 +78,16 @@ export default function EffectsControls() {
       </div>
 
       <div>
-        <label className="text-sm text-gray-600 dark:text-gray-400">
-          Edge Feathering
-        </label>
-        <input
-          type="range"
-          min="0"
-          max="10"
-          step="0.1"
+        <DualModeInput
+          label="Edge Feathering"
           value={feather}
-          onChange={(e) => setFeather(Number(e.target.value))}
-          className="w-full"
+          onChange={setFeather}
+          min={0}
+          max={10}
+          step={0.1}
+          unit="px"
+          precision={1}
         />
-        <div className="text-sm text-gray-600 dark:text-gray-400">
-          {feather.toFixed(1)}px
-        </div>
       </div>
 
       <div className="space-y-4 bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
@@ -105,59 +95,36 @@ export default function EffectsControls() {
           Grain Effect
         </h3>
         
-        <div>
-          <label className="text-sm text-gray-600 dark:text-gray-400">
-            Intensity
-          </label>
-          <input
-            type="range"
-            min="0"
-            max="0.5"
-            step="0.01"
-            value={grain}
-            onChange={(e) => setGrain(Number(e.target.value))}
-            className="w-full"
-          />
-          <div className="text-sm text-gray-600 dark:text-gray-400">
-            {(grain * 100).toFixed(0)}%
-          </div>
-        </div>
+        <DualModeInput
+          label="Intensity"
+          value={grain * 100}
+          onChange={(value) => setGrain(value / 100)}
+          min={0}
+          max={50}
+          step={1}
+          unit="%"
+          precision={0}
+        />
 
-        <div>
-          <label className="text-sm text-gray-600 dark:text-gray-400">
-            Detail (Frequency)
-          </label>
-          <input
-            type="range"
-            min="0.1"
-            max="20"
-            step="0.1"
-            value={grainFrequency}
-            onChange={(e) => setGrainFrequency(Number(e.target.value))}
-            className="w-full"
-          />
-          <div className="text-sm text-gray-600 dark:text-gray-400">
-            {grainFrequency.toFixed(1)}
-          </div>
-        </div>
+        <DualModeInput
+          label="Detail (Frequency)"
+          value={grainFrequency}
+          onChange={setGrainFrequency}
+          min={0.1}
+          max={20}
+          step={0.1}
+          precision={1}
+        />
 
-        <div>
-          <label className="text-sm text-gray-600 dark:text-gray-400">
-            Complexity (Octaves)
-          </label>
-          <input
-            type="range"
-            min="1"
-            max="10"
-            step="1"
-            value={grainOctaves}
-            onChange={(e) => setGrainOctaves(Number(e.target.value))}
-            className="w-full"
-          />
-          <div className="text-sm text-gray-600 dark:text-gray-400">
-            {grainOctaves}
-          </div>
-        </div>
+        <DualModeInput
+          label="Complexity (Octaves)"
+          value={grainOctaves}
+          onChange={setGrainOctaves}
+          min={1}
+          max={10}
+          step={1}
+          precision={0}
+        />
 
         <div>
           <label className="text-sm text-gray-600 dark:text-gray-400">
