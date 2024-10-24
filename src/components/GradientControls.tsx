@@ -2,6 +2,7 @@ import { useGradient } from '../context/GradientContext';
 import RadialControls from './RadialControls';
 import EffectsControls from './EffectsControls';
 import DualModeInput from './DualModeInput';
+import PreviewSettings from './PreviewSettings';
 
 export default function GradientControls() {
   const {
@@ -61,6 +62,7 @@ export default function GradientControls() {
       )}
 
       <EffectsControls />
+      <PreviewSettings />
     </div>
   );
 }

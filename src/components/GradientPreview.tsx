@@ -16,6 +16,7 @@ export default function GradientPreview() {
     grainOctaves,
     grainBlendMode,
     aspectRatio,
+    backgroundColor,
   } = useGradient();
 
   const gradientId = 'mainGradient';
@@ -34,7 +35,7 @@ export default function GradientPreview() {
   const sortedStops = [...colorStops].sort((a, b) => a.position - b.position);
 
   return (
-    <div className="absolute inset-0 overflow-hidden">
+    <div className="absolute inset-0 overflow-hidden" style={{ backgroundColor }}>
       <svg
         className="w-full h-full"
         preserveAspectRatio="xMidYMid slice"
