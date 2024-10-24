@@ -5,26 +5,30 @@ export default function PreviewSettings() {
 
   return (
     <div className="space-y-4">
-      <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+      <div className="text-white/80 text-sm font-bold font-['Inter'] uppercase leading-tight tracking-wider mb-4">
         Preview Settings
-      </h2>
-      <div className="flex items-center gap-4 bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
-        <label className="text-sm text-gray-600 dark:text-gray-400">
+      </div>
+      
+      <div className="pt-0.5 flex justify-between items-center">
+        <div className="text-white/60 text-sm font-normal">
           Background Color
-        </label>
-        <div className="flex items-center gap-2">
-          <input
-            type="color"
-            value={backgroundColor}
-            onChange={(e) => setBackgroundColor(e.target.value)}
-            className="w-12 h-8 rounded cursor-pointer"
-          />
-          <div className="text-sm text-gray-600 dark:text-gray-400 font-mono">
+        </div>
+        <div className="flex items-center gap-3">
+          <div className="text-white/90 text-sm font-normal font-mono">
             {backgroundColor.toUpperCase()}
+          </div>
+          <div className="w-9 h-9 p-px rounded-md border border-white/10">
+            <input
+              type="color"
+              value={backgroundColor}
+              onChange={(e) => setBackgroundColor(e.target.value)}
+              className="w-full h-full cursor-pointer bg-transparent"
+            />
           </div>
         </div>
       </div>
-      <p className="text-xs text-gray-500 dark:text-gray-400 italic">
+      
+      <p className="text-xs text-white/60 italic">
         Note: Background color is for preview only and won't be included in exports
       </p>
     </div>

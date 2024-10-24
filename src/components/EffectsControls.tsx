@@ -1,12 +1,8 @@
 import { useGradient } from '../context/GradientContext';
-import { Trash2, Plus } from 'lucide-react';
-import type { BlendMode } from '../context/GradientContext';
-import DualModeInput from './DualModeInput';
+import type { BlendMode } from '../context/gradientDefaults';
 
 export default function EffectsControls() {
   const { 
-    feather, 
-    setFeather, 
     grain, 
     setGrain,
     grainFrequency,
@@ -15,134 +11,139 @@ export default function EffectsControls() {
     setGrainOctaves,
     grainBlendMode,
     setGrainBlendMode,
-    colorStops,
-    addColorStop,
-    updateColorStop,
-    removeColorStop,
   } = useGradient();
 
   const blendModes: BlendMode[] = ['overlay', 'color-burn', 'multiply', 'screen', 'soft-light'];
 
   return (
-    <div className="space-y-4">
-      <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
-        Effects
-      </h2>
-
-      <div className="space-y-4">
-        <div className="flex justify-between items-center">
-          <h3 className="text-base font-medium text-gray-900 dark:text-white">
-            Color Stops
-          </h3>
+    <div className="space-y-3">
+      <div className="flex gap-4">
+        <div className="grow h-11 p-1 rounded-full shadow-sm border border-white/20 flex justify-between items-center">
           <button
-            onClick={addColorStop}
-            className="p-2 text-purple-600 hover:text-purple-700 dark:text-purple-400 dark:hover:text-purple-300"
+            className={`grow py-2.5 rounded-full text-center text-sm font-normal transition-all ${
+              !grain
+                ? 'bg-white/10 shadow-sm border border-white/20 font-bold text-white'
+                : 'text-white/90 hover:text-white'
+            }`}
+            onClick={() => setGrain(0)}
           >
-            <Plus className="w-5 h-5" />
+            Smooth
+          </button>
+          <button
+            className={`grow py-2.5 rounded-full text-center text-sm font-normal transition-all ${
+              grain > 0
+                ? 'bg-white/10 shadow-sm border border-white/20 font-bold text-white'
+                : 'text-white/90 hover:text-white'
+            }`}
+            onClick={() => setGrain(0.25)}
+          >
+            Grain
           </button>
         </div>
-        <div className="space-y-4">
-          {colorStops.map((stop) => (
-            <div
-              key={stop.id}
-              className="flex items-center gap-4 bg-gray-50 dark:bg-gray-700 p-4 rounded-lg"
-            >
+      </div>
+
+      {grain > 0 && (
+        <div className="space-y-3">
+          <div className="pb-1.5 flex items-center gap-3">
+            <div className="grow flex justify-between items-start h-5">
+              <div className="text-white/60 text-sm font-normal">
+                Intensity
+              </div>
+              <div className="text-white/90 text-sm font-normal">
+                {Math.round(grain * 100)}%
+              </div>
+            </div>
+            <div className="grow h-1.5 bg-white/10 rounded-lg relative">
               <input
-                type="color"
-                value={stop.color}
-                onChange={(e) =>
-                  updateColorStop(stop.id, { color: e.target.value })
-                }
-                className="w-12 h-8 rounded cursor-pointer"
-              />
-              <DualModeInput
-                value={stop.position}
-                onChange={(value) => updateColorStop(stop.id, { position: value })}
+                type="range"
+                value={grain * 100}
+                onChange={(e) => setGrain(Number(e.target.value) / 100)}
                 min={0}
                 max={100}
                 step={1}
-                unit="%"
-                precision={0}
+                className="absolute w-full h-3 opacity-0 cursor-pointer"
               />
-              {colorStops.length > 2 && (
-                <button
-                  onClick={() => removeColorStop(stop.id)}
-                  className="p-2 text-red-500 hover:text-red-600"
-                >
-                  <Trash2 className="w-4 h-4" />
-                </button>
-              )}
+              <div 
+                className="h-3 flex items-center"
+                style={{ paddingLeft: `${grain * 100}%` }}
+              >
+                <div className="w-3 h-3 bg-white rounded-full shadow-sm" />
+              </div>
             </div>
-          ))}
+          </div>
+
+          <div className="pb-1.5 flex items-center gap-3">
+            <div className="grow flex justify-between items-start h-5">
+              <div className="text-white/60 text-sm font-normal">
+                Detail
+              </div>
+              <div className="text-white/90 text-sm font-normal">
+                {grainFrequency.toFixed(1)}
+              </div>
+            </div>
+            <div className="grow h-1.5 bg-white/10 rounded-lg relative">
+              <input
+                type="range"
+                value={grainFrequency}
+                onChange={(e) => setGrainFrequency(Number(e.target.value))}
+                min={0.1}
+                max={20}
+                step={0.1}
+                className="absolute w-full h-3 opacity-0 cursor-pointer"
+              />
+              <div 
+                className="h-3 flex items-center"
+                style={{ paddingLeft: `${(grainFrequency / 20) * 100}%` }}
+              >
+                <div className="w-3 h-3 bg-white rounded-full shadow-sm" />
+              </div>
+            </div>
+          </div>
+
+          <div className="pb-1.5 flex items-center gap-3">
+            <div className="grow flex justify-between items-start h-5">
+              <div className="text-white/60 text-sm font-normal">
+                Complexity
+              </div>
+              <div className="text-white/90 text-sm font-normal">
+                {grainOctaves}
+              </div>
+            </div>
+            <div className="grow h-1.5 bg-white/10 rounded-lg relative">
+              <input
+                type="range"
+                value={grainOctaves}
+                onChange={(e) => setGrainOctaves(Number(e.target.value))}
+                min={1}
+                max={10}
+                step={1}
+                className="absolute w-full h-3 opacity-0 cursor-pointer"
+              />
+              <div 
+                className="h-3 flex items-center"
+                style={{ paddingLeft: `${((grainOctaves - 1) / 9) * 100}%` }}
+              >
+                <div className="w-3 h-3 bg-white rounded-full shadow-sm" />
+              </div>
+            </div>
+          </div>
+
+          <div className="pt-0.5">
+            <label className="text-white/60 text-sm block mb-2">Blend Mode</label>
+            <select
+              value={grainBlendMode}
+              onChange={(e) => setGrainBlendMode(e.target.value as BlendMode)}
+              className="w-full h-9 px-4 py-2 bg-white/10 rounded-md shadow-sm border border-white/10 text-white/90 text-sm font-normal focus:outline-none focus:ring-2 focus:ring-purple-500"
+            >
+              {blendModes.map((mode) => (
+                <option key={mode} value={mode}>
+                  {mode.split('-').map((word) => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
-      </div>
-
-      <div>
-        <DualModeInput
-          label="Edge Feathering"
-          value={feather}
-          onChange={setFeather}
-          min={0}
-          max={10}
-          step={0.1}
-          unit="px"
-          precision={1}
-        />
-      </div>
-
-      <div className="space-y-4 bg-gray-50 dark:bg-gray-700 p-4 rounded-lg">
-        <h3 className="text-base font-medium text-gray-900 dark:text-white">
-          Grain Effect
-        </h3>
-        
-        <DualModeInput
-          label="Intensity"
-          value={grain * 100}
-          onChange={(value) => setGrain(value / 100)}
-          min={0}
-          max={50}
-          step={1}
-          unit="%"
-          precision={0}
-        />
-
-        <DualModeInput
-          label="Detail (Frequency)"
-          value={grainFrequency}
-          onChange={setGrainFrequency}
-          min={0.1}
-          max={20}
-          step={0.1}
-          precision={1}
-        />
-
-        <DualModeInput
-          label="Complexity (Octaves)"
-          value={grainOctaves}
-          onChange={setGrainOctaves}
-          min={1}
-          max={10}
-          step={1}
-          precision={0}
-        />
-
-        <div>
-          <label className="text-sm text-gray-600 dark:text-gray-400">
-            Blend Mode
-          </label>
-          <select
-            value={grainBlendMode}
-            onChange={(e) => setGrainBlendMode(e.target.value as BlendMode)}
-            className="w-full mt-1 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-purple-500 focus:border-purple-500 sm:text-sm"
-          >
-            {blendModes.map((mode) => (
-              <option key={mode} value={mode}>
-                {mode.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}
-              </option>
-            ))}
-          </select>
-        </div>
-      </div>
+      )}
     </div>
   );
 }

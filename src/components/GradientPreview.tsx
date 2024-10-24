@@ -1,4 +1,3 @@
-import React from 'react';
 import { useGradient } from '../context/GradientContext';
 
 export default function GradientPreview() {

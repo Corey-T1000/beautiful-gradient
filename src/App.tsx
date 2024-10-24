@@ -1,4 +1,3 @@
-import React from 'react';
 import { GradientProvider } from './context/GradientContext';
 import GradientPreview from './components/GradientPreview';
 import UnifiedTerminal from './components/UnifiedTerminal';

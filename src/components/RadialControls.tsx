@@ -1,5 +1,4 @@
 import { useGradient } from '../context/GradientContext';
-import DualModeInput from './DualModeInput';
 
 export default function RadialControls() {
   const {
@@ -15,75 +14,148 @@ export default function RadialControls() {
     setAspectRatio,
   } = useGradient();
 
-  const shapes = ['circle', 'ellipse'] as const;
-
   return (
     <div className="space-y-4">
-      <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
-        Radial Settings
-      </h2>
-      
-      <div className="flex gap-4 mb-4">
-        {shapes.map((shape) => (
+      <div className="flex gap-4">
+        <div className="grow h-11 p-1 rounded-full shadow-sm border border-white/20 flex justify-between items-center">
           <button
-            key={shape}
-            className={`px-4 py-2 rounded-md ${
-              radialShape === shape
-                ? 'bg-purple-600 text-white'
-                : 'bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300'
+            className={`grow py-2.5 rounded-full text-center text-sm font-normal transition-all ${
+              radialShape === 'circle'
+                ? 'bg-white/10 shadow-sm border border-white/20 font-bold text-white'
+                : 'text-white/90 hover:text-white'
             }`}
-            onClick={() => setRadialShape(shape)}
+            onClick={() => setRadialShape('circle')}
           >
-            {shape.charAt(0).toUpperCase() + shape.slice(1)}
+            Circle
           </button>
-        ))}
+          <button
+            className={`grow py-2.5 rounded-full text-center text-sm font-normal transition-all ${
+              radialShape === 'ellipse'
+                ? 'bg-white/10 shadow-sm border border-white/20 font-bold text-white'
+                : 'text-white/90 hover:text-white'
+            }`}
+            onClick={() => setRadialShape('ellipse')}
+          >
+            Ellipse
+          </button>
+        </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
-        <DualModeInput
-          label="Center X"
-          value={centerX}
-          onChange={setCenterX}
-          min={0}
-          max={100}
-          step={1}
-          unit="%"
-          precision={0}
-        />
-        <DualModeInput
-          label="Center Y"
-          value={centerY}
-          onChange={setCenterY}
-          min={0}
-          max={100}
-          step={1}
-          unit="%"
-          precision={0}
-        />
+      <div className="space-y-3">
+        <div className="pb-1.5 flex items-center gap-3">
+          <div className="grow flex justify-between items-start h-5">
+            <div className="text-white/60 text-sm font-normal">
+              Center X
+            </div>
+            <div className="text-white/90 text-sm font-normal">
+              {centerX}%
+            </div>
+          </div>
+          <div className="grow h-1.5 bg-white/10 rounded-lg relative">
+            <input
+              type="range"
+              value={centerX}
+              onChange={(e) => setCenterX(Number(e.target.value))}
+              min={0}
+              max={100}
+              step={1}
+              className="absolute w-full h-3 opacity-0 cursor-pointer"
+            />
+            <div 
+              className="h-3 flex items-center"
+              style={{ paddingLeft: `${centerX}%` }}
+            >
+              <div className="w-3 h-3 bg-white rounded-full shadow-sm" />
+            </div>
+          </div>
+        </div>
+
+        <div className="pb-1.5 flex items-center gap-3">
+          <div className="grow flex justify-between items-start h-5">
+            <div className="text-white/60 text-sm font-normal">
+              Center Y
+            </div>
+            <div className="text-white/90 text-sm font-normal">
+              {centerY}%
+            </div>
+          </div>
+          <div className="grow h-1.5 bg-white/10 rounded-lg relative">
+            <input
+              type="range"
+              value={centerY}
+              onChange={(e) => setCenterY(Number(e.target.value))}
+              min={0}
+              max={100}
+              step={1}
+              className="absolute w-full h-3 opacity-0 cursor-pointer"
+            />
+            <div 
+              className="h-3 flex items-center"
+              style={{ paddingLeft: `${centerY}%` }}
+            >
+              <div className="w-3 h-3 bg-white rounded-full shadow-sm" />
+            </div>
+          </div>
+        </div>
+
+        <div className="pb-1.5 flex items-center gap-3">
+          <div className="grow flex justify-between items-start h-5">
+            <div className="text-white/60 text-sm font-normal">
+              Radius
+            </div>
+            <div className="text-white/90 text-sm font-normal">
+              {radius}%
+            </div>
+          </div>
+          <div className="grow h-1.5 bg-white/10 rounded-lg relative">
+            <input
+              type="range"
+              value={radius}
+              onChange={(e) => setRadius(Number(e.target.value))}
+              min={0}
+              max={100}
+              step={1}
+              className="absolute w-full h-3 opacity-0 cursor-pointer"
+            />
+            <div 
+              className="h-3 flex items-center"
+              style={{ paddingLeft: `${radius}%` }}
+            >
+              <div className="w-3 h-3 bg-white rounded-full shadow-sm" />
+            </div>
+          </div>
+        </div>
+
+        {radialShape === 'ellipse' && (
+          <div className="pb-1.5 flex items-center gap-3">
+            <div className="grow flex justify-between items-start h-5">
+              <div className="text-white/60 text-sm font-normal">
+                Aspect Ratio
+              </div>
+              <div className="text-white/90 text-sm font-normal">
+                {aspectRatio.toFixed(2)}
+              </div>
+            </div>
+            <div className="grow h-1.5 bg-white/10 rounded-lg relative">
+              <input
+                type="range"
+                value={aspectRatio}
+                onChange={(e) => setAspectRatio(Number(e.target.value))}
+                min={0.5}
+                max={2}
+                step={0.1}
+                className="absolute w-full h-3 opacity-0 cursor-pointer"
+              />
+              <div 
+                className="h-3 flex items-center"
+                style={{ paddingLeft: `${((aspectRatio - 0.5) / 1.5) * 100}%` }}
+              >
+                <div className="w-3 h-3 bg-white rounded-full shadow-sm" />
+              </div>
+            </div>
+          </div>
+        )}
       </div>
-
-      <DualModeInput
-        label="Radius"
-        value={radius}
-        onChange={setRadius}
-        min={0}
-        max={100}
-        step={1}
-        unit="%"
-        precision={0}
-      />
-
-      {radialShape === 'ellipse' && (
-        <DualModeInput
-          label="Aspect Ratio"
-          value={aspectRatio}
-          onChange={setAspectRatio}
-          min={0.5}
-          max={2}
-          step={0.1}
-          precision={1}
-        />
-      )}
     </div>
   );
 }

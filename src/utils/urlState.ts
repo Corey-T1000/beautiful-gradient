@@ -1,4 +1,4 @@
-import type { GradientState, ColorStop, BlendMode } from '../context/GradientContext';
+import type { GradientState, ColorStop, BlendMode } from '../context/gradientDefaults';
 
 export function encodeState(state: GradientState): string {
   const params = new URLSearchParams();
@@ -16,6 +16,7 @@ export function encodeState(state: GradientState): string {
   params.set('grainOctaves', state.grainOctaves.toString());
   params.set('grainBlendMode', state.grainBlendMode);
   params.set('aspectRatio', state.aspectRatio.toString());
+  params.set('backgroundColor', state.backgroundColor);
   
   // Encode color stops
   params.set('colorStops', JSON.stringify(state.colorStops));
@@ -52,6 +53,7 @@ export function decodeState(queryString: string): Partial<GradientState> {
   state.grainFrequency = getNumber('grainFrequency', 0.6);
   state.grainOctaves = getNumber('grainOctaves', 4);
   state.aspectRatio = getNumber('aspectRatio', 1.0);
+  state.backgroundColor = params.get('backgroundColor') ?? '#1e1e2e';
 
   // Decode shape
   const shape = params.get('radialShape');

@@ -1,31 +1,7 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
-import { decodeState, updateURL } from '../utils/urlState';
-
-export interface ColorStop {
-  id: string;
-  color: string;
-  alpha: number;
-  position: number;
-}
-
-export type BlendMode = 'overlay' | 'color-burn' | 'multiply' | 'screen' | 'soft-light';
-export type Shape = 'circle' | 'ellipse';
-
-export interface GradientState {
-  type: 'linear' | 'radial';
-  angle: number;
-  colorStops: ColorStop[];
-  centerX: number;
-  centerY: number;
-  radius: number;
-  radialShape: Shape;
-  feather: number;
-  grain: number;
-  grainFrequency: number;
-  grainOctaves: number;
-  grainBlendMode: BlendMode;
-  aspectRatio: number;
-}
+import { createContext, useContext, useState, useEffect } from 'react';
+import { updateURL } from '../utils/urlState';
+import { GradientState, ColorStop, BlendMode, Shape } from './gradientDefaults';
+import { getInitialState } from './gradientState';
 
 interface GradientContextType extends GradientState {
   setType: (type: 'linear' | 'radial') => void;
@@ -40,50 +16,13 @@ interface GradientContextType extends GradientState {
   setGrainOctaves: (octaves: number) => void;
   setGrainBlendMode: (mode: BlendMode) => void;
   setAspectRatio: (ratio: number) => void;
+  setBackgroundColor: (color: string) => void;
   addColorStop: () => void;
   updateColorStop: (id: string, updates: Partial<Omit<ColorStop, 'id'>>) => void;
   removeColorStop: (id: string) => void;
 }
 
-// Default values as constants
-const DEFAULT_GRADIENT_TYPE = 'radial' as const;
-const DEFAULT_ANGLE = 90;
-const DEFAULT_CENTER_X = 32;
-const DEFAULT_CENTER_Y = 32;
-const DEFAULT_RADIUS = 66;
-const DEFAULT_SHAPE: Shape = 'ellipse';
-const DEFAULT_FEATHER = 0;
-const DEFAULT_GRAIN = 0;
-const DEFAULT_GRAIN_FREQUENCY = 0.6;
-const DEFAULT_GRAIN_OCTAVES = 4;
-const DEFAULT_GRAIN_BLEND_MODE: BlendMode = 'overlay';
-const DEFAULT_ASPECT_RATIO = 1.0;
-const DEFAULT_COLOR_STOPS: ColorStop[] = [
-  { id: '1', color: '#FF0080', alpha: 1, position: 0 },
-  { id: '2', color: '#7928CA', alpha: 1, position: 100 },
-];
-
 const GradientContext = createContext<GradientContextType | null>(null);
-
-// Get initial state from URL or defaults
-function getInitialState(): GradientState {
-  const urlState = decodeState(window.location.search);
-  return {
-    type: urlState.type ?? DEFAULT_GRADIENT_TYPE,
-    angle: urlState.angle ?? DEFAULT_ANGLE,
-    centerX: urlState.centerX ?? DEFAULT_CENTER_X,
-    centerY: urlState.centerY ?? DEFAULT_CENTER_Y,
-    radius: urlState.radius ?? DEFAULT_RADIUS,
-    radialShape: urlState.radialShape ?? DEFAULT_SHAPE,
-    feather: urlState.feather ?? DEFAULT_FEATHER,
-    grain: urlState.grain ?? DEFAULT_GRAIN,
-    grainFrequency: urlState.grainFrequency ?? DEFAULT_GRAIN_FREQUENCY,
-    grainOctaves: urlState.grainOctaves ?? DEFAULT_GRAIN_OCTAVES,
-    grainBlendMode: urlState.grainBlendMode ?? DEFAULT_GRAIN_BLEND_MODE,
-    aspectRatio: urlState.aspectRatio ?? DEFAULT_ASPECT_RATIO,
-    colorStops: urlState.colorStops ?? DEFAULT_COLOR_STOPS,
-  };
-}
 
 export function GradientProvider({ children }: { children: React.ReactNode }) {
   const [state, setState] = useState<GradientState>(getInitialState);
@@ -105,6 +44,7 @@ export function GradientProvider({ children }: { children: React.ReactNode }) {
   const setGrainOctaves = (grainOctaves: number) => setState(prev => ({ ...prev, grainOctaves }));
   const setGrainBlendMode = (grainBlendMode: BlendMode) => setState(prev => ({ ...prev, grainBlendMode }));
   const setAspectRatio = (aspectRatio: number) => setState(prev => ({ ...prev, aspectRatio }));
+  const setBackgroundColor = (backgroundColor: string) => setState(prev => ({ ...prev, backgroundColor }));
 
   const addColorStop = () => {
     setState(prev => {
@@ -148,6 +88,7 @@ export function GradientProvider({ children }: { children: React.ReactNode }) {
       setGrainOctaves,
       setGrainBlendMode,
       setAspectRatio,
+      setBackgroundColor,
       addColorStop,
       updateColorStop,
       removeColorStop,
