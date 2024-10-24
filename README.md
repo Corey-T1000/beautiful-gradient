@@ -1,18 +1,14 @@
+![Beautiful Gradients Interface](./assets/ui-screenshot.png)
+
 # Beautiful Gradients 🎨
 
 [![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)](https://reactjs.org/)
 [![Vite](https://img.shields.io/badge/Vite-B73BFE?style=for-the-badge&logo=vite&logoColor=FFD62E)](https://vitejs.dev/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
+[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/Corey-T1000/beautiful-gradient)
 
 A modern web application for creating stunning, customizable gradients with advanced controls. Built with React, TypeScript, and Tailwind CSS.
-
-<!-- TODO: To add the screenshot:
-1. Create a new issue in your GitHub repository
-2. Drag and drop the screenshot into the issue description
-3. Copy the generated image URL
-4. Replace this comment with: ![Beautiful Gradients Screenshot](paste-url-here)
--->
 
 ## ✨ Features
 
@@ -51,6 +47,10 @@ A modern web application for creating stunning, customizable gradients with adva
    ```
 
 4. Open http://localhost:5176 in your browser
+
+Or try it directly in your browser with StackBlitz:
+
+[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/Corey-T1000/beautiful-gradient)
 
 ## 🛠️ Tech Stack
 
