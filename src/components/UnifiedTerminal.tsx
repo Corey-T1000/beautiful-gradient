@@ -3,6 +3,7 @@ import { useGradient } from '../context/GradientContext';
 import { Code2, Settings, Palette, Terminal, Copy, Check, Download } from 'lucide-react';
 import { generateSVG, generateCSS } from '../utils/codeGenerators';
 import CodePreview from './CodePreview';
+import type { BlendMode } from '../context/GradientContext';
 
 type Tab = 'controls' | 'svg' | 'css';
 
@@ -31,9 +32,17 @@ export default function UnifiedTerminal() {
     setFeather,
     grain,
     setGrain,
+    grainFrequency,
+    setGrainFrequency,
+    grainOctaves,
+    setGrainOctaves,
+    grainBlendMode,
+    setGrainBlendMode,
     aspectRatio,
     setAspectRatio,
   } = useGradient();
+
+  const blendModes: BlendMode[] = ['overlay', 'color-burn', 'multiply', 'screen', 'soft-light'];
 
   const copyToClipboard = async () => {
     const code = activeTab === 'svg' ? generateSVG(gradient) : generateCSS(gradient);
@@ -53,6 +62,73 @@ export default function UnifiedTerminal() {
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
   };
+
+  // Convert grain frequency percentage to actual value (0-100% -> 0.1-20)
+  const frequencyToPercent = (freq: number) => ((freq - 0.1) / 19.9) * 100;
+  const percentToFrequency = (percent: number) => (percent * 19.9 / 100) + 0.1;
+
+  const renderColorStop = (stop: typeof colorStops[0]) => (
+    <div
+      key={stop.id}
+      className="flex items-center gap-3 bg-white/5 p-3 rounded-lg"
+    >
+      <div className="relative">
+        <input
+          type="color"
+          value={stop.color}
+          onChange={(e) => updateColorStop(stop.id, { color: e.target.value })}
+          className="w-8 h-8 rounded cursor-pointer bg-transparent"
+        />
+        <div 
+          className="absolute inset-0 rounded"
+          style={{
+            backgroundImage: `linear-gradient(45deg, #ccc 25%, transparent 25%), 
+                            linear-gradient(-45deg, #ccc 25%, transparent 25%), 
+                            linear-gradient(45deg, transparent 75%, #ccc 75%), 
+                            linear-gradient(-45deg, transparent 75%, #ccc 75%)`,
+            backgroundSize: '8px 8px',
+            backgroundPosition: '0 0, 0 4px, 4px -4px, -4px 0px',
+            pointerEvents: 'none',
+            opacity: 1 - stop.alpha
+          }}
+        />
+      </div>
+      <div className="flex-1 space-y-2">
+        <div className="flex justify-between text-sm text-white/60">
+          <span>Position</span>
+          <span>{stop.position}%</span>
+        </div>
+        <input
+          type="range"
+          min="0"
+          max="100"
+          value={stop.position}
+          onChange={(e) => updateColorStop(stop.id, { position: Number(e.target.value) })}
+          className="w-full"
+        />
+        <div className="flex justify-between text-sm text-white/60">
+          <span>Opacity</span>
+          <span>{(stop.alpha * 100).toFixed(0)}%</span>
+        </div>
+        <input
+          type="range"
+          min="0"
+          max="100"
+          value={stop.alpha * 100}
+          onChange={(e) => updateColorStop(stop.id, { alpha: Number(e.target.value) / 100 })}
+          className="w-full"
+        />
+      </div>
+      {colorStops.length > 2 && (
+        <button
+          onClick={() => removeColorStop(stop.id)}
+          className="p-1.5 text-red-400 hover:text-red-300 bg-white/5 rounded-md hover:bg-white/10 transition-colors"
+        >
+          <Terminal className="w-4 h-4" />
+        </button>
+      )}
+    </div>
+  );
 
   return (
     <div className="bg-gray-900/80 backdrop-blur-xl rounded-xl border border-white/10 overflow-hidden shadow-2xl transition-all duration-300 ease-in-out">
@@ -268,68 +344,88 @@ export default function UnifiedTerminal() {
                     />
                   </div>
 
-                  <div className="space-y-2">
-                    <div className="flex justify-between text-sm">
-                      <span className="text-white/60">Grain</span>
-                      <span className="text-white/90">{(grain * 100).toFixed(0)}%</span>
+                  <div className="space-y-4 bg-white/5 p-4 rounded-lg">
+                    <h4 className="text-sm font-medium text-white/80">Grain Effect</h4>
+                    
+                    <div className="space-y-2">
+                      <div className="flex justify-between text-sm">
+                        <span className="text-white/60">Intensity</span>
+                        <span className="text-white/90">{(grain * 100).toFixed(0)}%</span>
+                      </div>
+                      <input
+                        type="range"
+                        min="0"
+                        max="1"
+                        step="0.01"
+                        value={grain}
+                        onChange={(e) => setGrain(Number(e.target.value))}
+                        className="w-full"
+                      />
                     </div>
-                    <input
-                      type="range"
-                      min="0"
-                      max="0.5"
-                      step="0.01"
-                      value={grain}
-                      onChange={(e) => setGrain(Number(e.target.value))}
-                      className="w-full"
-                    />
+
+                    <div className="space-y-2">
+                      <div className="flex justify-between text-sm">
+                        <span className="text-white/60">Detail</span>
+                        <span className="text-white/90">{frequencyToPercent(grainFrequency).toFixed(0)}%</span>
+                      </div>
+                      <input
+                        type="range"
+                        min="0"
+                        max="100"
+                        step="1"
+                        value={frequencyToPercent(grainFrequency)}
+                        onChange={(e) => setGrainFrequency(percentToFrequency(Number(e.target.value)))}
+                        className="w-full"
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <div className="flex justify-between text-sm">
+                        <span className="text-white/60">Complexity</span>
+                        <span className="text-white/90">{((grainOctaves / 10) * 100).toFixed(0)}%</span>
+                      </div>
+                      <input
+                        type="range"
+                        min="0"
+                        max="100"
+                        step="1"
+                        value={(grainOctaves / 10) * 100}
+                        onChange={(e) => setGrainOctaves(Math.max(1, Math.round((Number(e.target.value) / 100) * 10)))}
+                        className="w-full"
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <label className="text-sm text-white/60">Blend Mode</label>
+                      <select
+                        value={grainBlendMode}
+                        onChange={(e) => setGrainBlendMode(e.target.value as BlendMode)}
+                        className="w-full bg-white/10 border border-white/10 rounded-md shadow-sm py-2 px-3 text-white/90 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500"
+                      >
+                        {blendModes.map((mode) => (
+                          <option key={mode} value={mode} className="bg-gray-800">
+                            {mode.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+
+                  <div className="pt-4">
+                    <div className="flex justify-between items-center">
+                      <h4 className="text-sm text-white/60">Color Stops</h4>
+                      <button
+                        onClick={addColorStop}
+                        className="p-1.5 text-white/60 hover:text-white/90 bg-white/5 rounded-md hover:bg-white/10 transition-colors"
+                      >
+                        <Palette className="w-4 h-4" />
+                      </button>
+                    </div>
+                    <div className="space-y-3 mt-3">
+                      {colorStops.map(renderColorStop)}
+                    </div>
                   </div>
                 </div>
-              </div>
-            </div>
-
-            <div className="space-y-4">
-              <div className="flex justify-between items-center">
-                <h3 className="text-sm font-medium text-white/80">Color Stops</h3>
-                <button
-                  onClick={addColorStop}
-                  className="p-1.5 text-white/60 hover:text-white/90 bg-white/5 rounded-md hover:bg-white/10 transition-colors"
-                >
-                  <Palette className="w-4 h-4" />
-                </button>
-              </div>
-              <div className="space-y-3">
-                {colorStops.map((stop) => (
-                  <div
-                    key={stop.id}
-                    className="flex items-center gap-3 bg-white/5 p-3 rounded-lg"
-                  >
-                    <input
-                      type="color"
-                      value={stop.color}
-                      onChange={(e) => updateColorStop(stop.id, { color: e.target.value })}
-                      className="w-8 h-8 rounded cursor-pointer bg-transparent"
-                    />
-                    <input
-                      type="range"
-                      min="0"
-                      max="100"
-                      value={stop.position}
-                      onChange={(e) => updateColorStop(stop.id, { position: Number(e.target.value) })}
-                      className="flex-1"
-                    />
-                    <div className="text-sm text-white/60 w-12">
-                      {stop.position}%
-                    </div>
-                    {colorStops.length > 2 && (
-                      <button
-                        onClick={() => removeColorStop(stop.id)}
-                        className="p-1.5 text-red-400 hover:text-red-300 bg-white/5 rounded-md hover:bg-white/10 transition-colors"
-                      >
-                        <Terminal className="w-4 h-4" />
-                      </button>
-                    )}
-                  </div>
-                ))}
               </div>
             </div>
           </div>
